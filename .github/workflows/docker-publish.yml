@@ -1,0 +1,29 @@
+name: Build and Push Docker image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build JAR
+        run: ./mvnw clean package
+
+      - name: Build Docker image
+        run: docker build -t registry.local:5000/demo-api:0.0.1-SNAPSHOT .
+
+      - name: Push image to registry
+        run: docker push registry.local:5000/demo-api:0.0.1-SNAPSHOT
