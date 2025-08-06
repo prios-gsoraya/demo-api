@@ -20,7 +20,7 @@ jobs:
           java-version: '17'
 
       - name: Build JAR
-        run: ./mvnw clean package
+        run: mvn clean package
 
       - name: Build Docker image
         run: docker build -t registry.local:5000/demo-api:0.0.1-SNAPSHOT .
