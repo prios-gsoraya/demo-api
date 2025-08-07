@@ -1,4 +1,4 @@
-name: Build and Push Docker image
+name: Build and Push Docker image using Buildpacks
 
 on:
   push:
@@ -22,8 +22,17 @@ jobs:
       - name: Build JAR
         run: mvn clean package
 
-      - name: Build Docker image
-        run: docker build -t registry.local:5000/demo-api:0.0.1-SNAPSHOT .
+      - name: Install Pack CLI
+        run: |
+          curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.33.1/pack-v0.33.1-linux.tgz" | tar -xz
+          sudo mv pack /usr/local/bin/
 
-      - name: Push image to registry
+      - name: Build image with Buildpacks
+        run: |
+          pack build registry.local:5000/demo-api:0.0.1-SNAPSHOT \
+            --path . \
+            --builder paketobuildpacks/builder:base \
+            --env BP_JVM_VERSION=17
+
+      - name: Push image to local registry
         run: docker push registry.local:5000/demo-api:0.0.1-SNAPSHOT
